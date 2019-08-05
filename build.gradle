@@ -53,17 +53,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
-    libraryVariants.all { variant ->
-        variant.outputs.all { output ->
-            output.packageLibrary.exclude("libs/*")
-            if (variant.name == android.buildTypes.release.name) {
-                outputFileName = output.outputFile.name.replace(("-release.aar"), "-${version}.aar")
-            } else if (variant.name == android.buildTypes.debug.name) {
-                outputFileName = output.outputFile.name.replace((".aar"), "-${version}.aar")
-            }
-        }
-    }
 }
 
 repositories {
@@ -73,4 +62,19 @@ repositories {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+def repo = new File(rootDir, "repository")
+
+apply plugin: 'maven'
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository url: "file://${repo.absolutePath}"
+            pom.version = '0.1.0'
+            pom.groupId = 'jp.espresso3389'
+            pom.artifactId = 'android-support-pdfium'
+        }
+    }
 }
